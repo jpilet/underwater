@@ -147,7 +147,7 @@
 			  if (objfound>0){
 					p=prp+scp*f;
 					n=normal(p);
-					return ((1.0-iterCount*0.01) * 0.7 + vec3(n.x, n.y, n.z) * 0.3) * 0.5 + f * fogDistFactor * vec3 (0.4, 0.8, 1.0);
+					return ((1.0-iterCount*0.01) * 0.7 + vec3(n.x, n.y, n.z) * 0.3) * 0.5 + f * fogDistFactor * vec3 (0.4, 0.8, 1.0) - length(abs(gl_FragCoord.xy/iResolution.xy-0.5));
 			  }
 			  f=maxd;
 			  return vec3(background); //background color
