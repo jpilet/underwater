@@ -316,65 +316,56 @@
 
                         function sin(x) { return Math.sin(x); }
 			
+                        var end = 184.7;
                         function scenario(time) {
-                            density = cmpDensity(time);
-                            sphereSize = cmpSphereSize(time, density);
-                        }
-
-                        function cmpDensity(time) {
-                            var t = time;
                             var initialDensity = .1;
-
-                            var l = 6;
-                            if (t < l) {
-                                return (t / l) * initialDensity;
-                            }
-                            t -= l;
-
-                            l = 15;
-                            if (t < l) return (t / l) * (1 - initialDensity) + initialDensity;
-                            t -= l;
-
-                            l = 170;
-                            if (time < l) {
-                                return 1 + sin(t / 4.56) / 4;
-                            }
-                            t = time - l;
-
-                            var end = 184.7;
-                            return (end - time) / (end - l);
-                        }
-
-                        function cmpSphereSize(time, density) {
-                            var t = time;
-
-                            var l = 121;
-                            if (t < l) return Math.min(2.0, 0.3 / density);
-                            t -= l;
-
                             var diam = .25;
-                            var l = 140;
-                            if (time < l) {
-                                return diam + sin(time * Math.PI * 4) / 8;
-                            }
-                            t = time - l;
+                            var program = [
+                            { at: 0, do: function(t, l) {
+                                           density = (t/l) * initialDensity;
+                                           sphereSize = Math.min(2.0, 0.3 / density);
+                                         } },
+                            { at: 6, do: function(t, l) {
+                                           density = (t / l) * (1 - initialDensity) + initialDensity;
+                                           sphereSize = Math.min(2.0, 0.3 / density);
+                                         } },
+                            { at: 21, do: function(t, l) {
+                                           density = 1 + sin(t / 4.56) / 4;
+                                           sphereSize = Math.min(2.0, 0.3 / density);
+                                         } },
+                            { at: 121, do: function(t, l) {
+                                           density = 1 + sin(t / 4.56) / 4;
+                                           sphereSize = diam + sin(time * Math.PI * 4) / 8;
+                                         } },
+                            { at: 140, do: function(t, l) {
+                                           density = 1 + sin(t / 4.56) / 4;
+                                           sphereSize = diam + ((l - t) / l) *sin(time * Math.PI * 4) / 8;
+                                         } },
+                            { at: 145, do: function(t, l) {
+                                           density = 1 + sin(t / 4.56) / 4;
+                                           sphereSize = .2;
+                                         } },
+                            { at: 170, do: function(t) {
+                                           density = (end - time) / (end - time + t);
+                                           sphereSize = Math.min(2.0, 0.3 / density);
+                                         } },
+                            ];
 
-                            l = 5;
-
-                            if (t < l) {
-                                return diam + ((l - t) / l) *sin(time * Math.PI * 4) / 8;
-                            }
-
-                            var l = 170;
-
-                            if (t < l) {
-                                return .2;
-                            }
-                            var end = 184.7;
-                            return Math.min(2.0, 0.3 / density);
+                            runProgram(program);
                         }
 
-			function  render() {
+                        function runProgram(program) {
+                            for (var i = 0; i < program.length; ++i) {
+                                var at = program[i].at;
+                                var atNext = (i < (program.length - 1) ? program[i + 1].at : end);
+
+                                if (time > at && time < atNext) {
+                                    program[i].do(time - at, atNext - at);
+                                }
+                            }
+                        }
+
+			function render() {
                                 scenario(time);
 				gl.uniform1f(program.iGlobalTime, time);
 				gl.uniform1f(program.globalDensity, density);
