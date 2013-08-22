@@ -20,6 +20,7 @@
 			uniform float iGlobalTime;
 			uniform float moduloSpd;
                         uniform float globalDensity;
+                        uniform float sphereSize;
 			uniform vec2 iMouse;
 			uniform float fogDistFactor;
 			uniform vec3 fogCol;
@@ -52,7 +53,8 @@
 				// repeat
 			  vec3 myMod = vec3(modulusSize.x * (1.0 + 0.2*sin(p.y + moduloSpd)), modulusSize.y * (1.0 + 0.2*cos(p.z + moduloSpd)), modulusSize.z * (1.0 + 0.2 * cos(p.x + moduloSpd)));
                           float density = globalDensity;
-			  vec3 fp=modulus(p, myMod / density);
+                          myMod = myMod / density;
+			  vec3 fp=modulus(p, myMod);
 			  
 			   // rotate			  
 			   #ifdef ROTATEY
@@ -62,7 +64,7 @@
 				#endif
 				 fp = rotateZ(fp, p.x * 2.0 + p.y * p.z);			  
 			  
-			  float sphereDist = sdSphere(fp, min(1.0, 0.3 / density));
+			  float sphereDist = sdSphere(fp, sphereSize);
 			  return sphereDist;
 			}
 
@@ -193,6 +195,9 @@
 			var time = 0;
 			var gl;
 			var isMouseDown = false;
+
+                        var density = 1;
+                        var sphereSize = .3;
 			
 			document.onmousemove=getMouseCoordinates;
 			document.onmousedown=mouseDown;
@@ -256,6 +261,7 @@
 
 				program.iGlobalTime = gl.getUniformLocation(program, "iGlobalTime");
 				program.globalDensity = gl.getUniformLocation(program, "globalDensity");
+				program.sphereSize = gl.getUniformLocation(program, "sphereSize");
 				program.moduloSpd = gl.getUniformLocation(program, "moduloSpd");
 				program.iMouse = gl.getUniformLocation(program, "iMouse");
 				program.fogDistFactor = gl.getUniformLocation(program, "fogDistFactor");
@@ -308,9 +314,65 @@
 			function mouseUp(event) {
 				isMouseDown = false;
 			}			
+
+                        function sin(x) { return Math.sin(x); }
 			
-                        function density(time) {
-                            return (Math.sin(time / 2) + 1.001) / 2;
+                        function scenario(time) {
+                            density = cmpDensity(time);
+                            sphereSize = cmpSphereSize(time, density);
+                        }
+
+                        function cmpDensity(time) {
+                            var t = time;
+                            var initialDensity = .1;
+
+                            var l = 6;
+                            if (t < l) {
+                                return (t / l) * initialDensity;
+                            }
+                            t -= l;
+
+                            l = 15;
+                            if (t < l) return (t / l) * (1 - initialDensity) + initialDensity;
+                            t -= l;
+
+                            l = 170;
+                            if (time < l) {
+                                return 1 + sin(t / 4.56) / 4;
+                            }
+                            t = time - l;
+
+                            var end = 184.7;
+                            return (end - time) / (end - l);
+                        }
+
+                        function cmpSphereSize(time, density) {
+                            var t = time;
+
+                            var l = 121;
+                            if (t < l) return Math.min(2.0, 0.3 / density);
+                            t -= l;
+
+                            var diam = .25;
+                            var l = 140;
+                            if (time < l) {
+                                return diam + sin(time * Math.PI * 4) / 8;
+                            }
+                            t = time - l;
+
+                            l = 5;
+
+                            if (t < l) {
+                                return diam + ((l - t) / l) *sin(time * Math.PI * 4) / 8;
+                            }
+
+                            var l = 170;
+
+                            if (t < l) {
+                                return .2;
+                            }
+                            var end = 184.7;
+                            return Math.min(2.0, 0.3 / density);
                         }
 
 			const BPM = 125.0*2.0;
@@ -322,10 +384,12 @@
 			var beatcount = 0;
 			
 			function  render() {
+                                scenario(time);
 				gl.uniform1f(program.iGlobalTime, time);
-				gl.uniform1f(program.globalDensity, density(time));
+				gl.uniform1f(program.globalDensity, density);
 				gl.uniform1f(program.moduloSpd, time * 0.25);
 				gl.uniform1f(program.fogDistFactor, Math.abs(Math.sin(time * 0.25) * 0.1));
+                                gl.uniform1f(program.sphereSize, sphereSize);
 
 
 				gl.uniform2fv(program.iMouse, virtMouseCoords);
