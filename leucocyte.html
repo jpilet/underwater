@@ -22,19 +22,13 @@
                         uniform float globalDensity;
 			uniform vec2 iMouse;
 			uniform float fogDistFactor;
+			uniform vec3 fogCol;
 			
 			 const float maxe=0.001;
 			 const int maxiter=256;
 			const vec3 stairDimensions = vec3(0.2, 0.2,0.2);
 			const vec3 modulusSize = vec3(1.2, 1.2, 1.2);
 			
-
-			vec3 stepspace(
-			  in vec3 p,
-			  in float s)
-			{
-			  return p-mod(p-s/2.0,s);
-			}
 
 			vec3 modulus(
 			  in vec3 p,
@@ -150,7 +144,10 @@
 			  if (objfound>0){
 					p=prp+scp*f;
 					n=normal(p);
-					return ((1.0-iterCount*0.01) * 0.7 + vec3(n.x, n.y, n.z) * 0.3) * 0.5 + f * fogDistFactor * vec3 (0.4, 0.8, 1.0);
+					float vignetting = length(abs(gl_FragCoord.xy/iResolution.xy-0.5));
+					vec3 iterColor = ((1.0-iterCount*0.01) * 0.7 + vec3(n.x, n.y, n.z) * 0.3);
+					vec3 fogColor = f * fogDistFactor * fogCol;
+					return  iterColor * 0.5 + fogColor - vignetting;
 			  }
 			  f=maxd;
 			  return vec3(background); //background color
@@ -262,6 +259,7 @@
 				program.moduloSpd = gl.getUniformLocation(program, "moduloSpd");
 				program.iMouse = gl.getUniformLocation(program, "iMouse");
 				program.fogDistFactor = gl.getUniformLocation(program, "fogDistFactor");
+				program.fogCol= gl.getUniformLocation(program, "fogCol");
 
 				
 				window.requestAnimFrame = (function(){
@@ -338,7 +336,9 @@
 
 
 				gl.uniform2fv(program.iMouse, virtMouseCoords);
-								
+				
+				// CHANGE FOG WITH  BEAT
+				gl.uniform3fv(program.fogCol, [0.4, 0.8, 1.0]);
 
 				gl.drawArrays(gl.TRIANGLES, 0, numItems);				
 			}
@@ -349,7 +349,7 @@
                 <source src="leucocyte.mp3" type="audio/mpeg">
                 </audio>
                 <br/>
-		<canvas id="mycanvas" width="1024" height="768">
+		<canvas id="mycanvas" width="800" height="600">
 
 	</body>
 </html>
