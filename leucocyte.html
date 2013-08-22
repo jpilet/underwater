@@ -271,10 +271,12 @@
 				
 				(function animloop(){
 				  requestAnimFrame(animloop);
-                                  var timeRanges = document.getElementById("music").played;
-                                  time = timeRanges.end(timeRanges.length - 1);
-                                  console.log("Time: " + time);
-				  render();
+                                  var newtime = document.getElementById("music").currentTime;
+                                  if (newtime != time) {
+                                      time = newtime;
+                                      console.log("Time: " + time);
+                                      render();
+                                  }
 				})();				
 
 		}
