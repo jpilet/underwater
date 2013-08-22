@@ -28,13 +28,6 @@
 			const vec3 modulusSize = vec3(1.2, 1.2, 1.2);
 			
 
-			vec3 stepspace(
-			  in vec3 p,
-			  in float s)
-			{
-			  return p-mod(p-s/2.0,s);
-			}
-
 			vec3 modulus(
 			  in vec3 p,
 			  in vec3 s)
@@ -147,7 +140,10 @@
 			  if (objfound>0){
 					p=prp+scp*f;
 					n=normal(p);
-					return ((1.0-iterCount*0.01) * 0.7 + vec3(n.x, n.y, n.z) * 0.3) * 0.5 + f * fogDistFactor * vec3 (0.4, 0.8, 1.0) - length(abs(gl_FragCoord.xy/iResolution.xy-0.5));
+					float vignetting = length(abs(gl_FragCoord.xy/iResolution.xy-0.5));
+					vec3 iterColor = ((1.0-iterCount*0.01) * 0.7 + vec3(n.x, n.y, n.z) * 0.3);
+					vec3 fogColor = f * fogDistFactor * vec3 (0.4, 0.8, 1.0);
+					return  iterColor * 0.5 + fogColor - vignetting;
 			  }
 			  f=maxd;
 			  return vec3(background); //background color
@@ -325,7 +321,7 @@
                 <source src="leucocyte.mp3" type="audio/mpeg">
                 </audio>
                 <br/>
-		<canvas id="mycanvas" width="1024" height="768">
+		<canvas id="mycanvas" width="800" height="600">
 
 	</body>
 </html>
