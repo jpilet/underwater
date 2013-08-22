@@ -18,6 +18,7 @@
 			
 			uniform vec3 iResolution;
 			uniform float iGlobalTime;
+			uniform float vignetteVariation;
 			uniform float moduloSpd;
                         uniform float globalDensity;
                         uniform float sphereSize;
@@ -149,7 +150,7 @@
 					vec3 iterColor = ((1.0-iterCount*0.01) * 0.7 + vec3(n.x, n.y, n.z) * 0.3);
 					vec3 fogColor = f * fogDistFactor * fogCol;
 //					return fogCol;
-					return  iterColor * 0.5 + fogColor * 0.5 - vignetting;
+					return  iterColor * 0.5 + fogColor * 0.5 - vignetting * vignetteVariation;
 			  }
 			  f=maxd;
 			  return vec3(background); //background color
@@ -260,6 +261,7 @@
 				gl.vertexAttribPointer(program.vertexPos, itemSize, gl.FLOAT, false, 0, 0);
 
 				program.iGlobalTime = gl.getUniformLocation(program, "iGlobalTime");
+				program.vignetteVariation = gl.getUniformLocation(program, "vignetteVariation");
 				program.globalDensity = gl.getUniformLocation(program, "globalDensity");
 				program.sphereSize = gl.getUniformLocation(program, "sphereSize");
 				program.moduloSpd = gl.getUniformLocation(program, "moduloSpd");
@@ -377,6 +379,7 @@
 			function  render() {
                                 scenario(time);
 				gl.uniform1f(program.iGlobalTime, time);
+				gl.uniform1f(program.vignetteVariation, 1.0 + 0.05 * Math.sin(time + Math.random() * 0.6));
 				gl.uniform1f(program.globalDensity, density);
 				gl.uniform1f(program.moduloSpd, time * 0.25);
 				gl.uniform1f(program.fogDistFactor, Math.abs(Math.sin(time * 0.25) * 0.1));
