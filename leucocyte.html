@@ -148,7 +148,8 @@
 					float vignetting = length(abs(gl_FragCoord.xy/iResolution.xy-0.5));
 					vec3 iterColor = ((1.0-iterCount*0.01) * 0.7 + vec3(n.x, n.y, n.z) * 0.3);
 					vec3 fogColor = f * fogDistFactor * fogCol;
-					return  iterColor * 0.5 + fogColor - vignetting;
+//					return fogCol;
+					return  iterColor * 0.5 + fogColor * 0.5 - vignetting;
 			  }
 			  f=maxd;
 			  return vec3(background); //background color
@@ -281,7 +282,7 @@
                                   var newtime = document.getElementById("music").currentTime;
                                   if (newtime != time) {
                                       time = newtime;
-                                      console.log("Time: " + time);
+                                      //console.log("Time: " + time);
                                       render();
                                   }
 				})();				
@@ -365,7 +366,15 @@
                             }
                         }
 
-			function render() {
+			const BPM = 125.0*2.0;
+			const BEAT_OFFSET = 0.0;
+			const BAR_DURATION = 60 / BPM;
+			const BEAT_EVERY = 4;
+			var lastBeatTime = 0.0;
+			var nextchange=0.0;
+			var beatcount = 0;
+			
+			function  render() {
                                 scenario(time);
 				gl.uniform1f(program.iGlobalTime, time);
 				gl.uniform1f(program.globalDensity, density);
@@ -377,7 +386,21 @@
 				gl.uniform2fv(program.iMouse, virtMouseCoords);
 				
 				// CHANGE FOG WITH  BEAT
-				gl.uniform3fv(program.fogCol, [0.4, 0.8, 1.0]);
+				if (time >= nextchange) {
+					var delta = time-lastBeatTime;
+					if (delta >= BAR_DURATION) {					
+						lastBeatTime = time + delta;
+						beatcount++;
+						if (beatcount == BEAT_EVERY) {
+							beatcount = 0;
+							gl.uniform3fv(program.fogCol, [1.0, 0.8, 0.4]);
+							console.log("BEAT");
+							nextchange = time + 0.15;
+							}
+						}
+					else
+						gl.uniform3fv(program.fogCol, [0.4, 0.8, 1.0]);
+				}
 
 				gl.drawArrays(gl.TRIANGLES, 0, numItems);				
 			}
