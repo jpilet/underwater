@@ -58,7 +58,8 @@
 				// repeat
 			  vec3 myMod = vec3(modulusSize.x * (1.0 + 0.2*sin(p.y + moduloSpd)), modulusSize.y * (1.0 + 0.2*cos(p.z + moduloSpd)), modulusSize.z * (1.0 + 0.2 * cos(p.x + moduloSpd)));
                           float density = globalDensity;
-			  vec3 fp=modulus(p, myMod / density);
+                          myMod = myMod / density;
+			  vec3 fp=modulus(p, myMod);
 			  
 			   // rotate			  
 			   #ifdef ROTATEY
@@ -68,7 +69,7 @@
 				#endif
 				 fp = rotateZ(fp, p.x * 2.0 + p.y * p.z);			  
 			  
-			  float sphereDist = sdSphere(fp, min(1.0, 0.3 / density));
+			  float sphereDist = sdSphere(fp, min(2.0, 0.3 / (density)));
 			  return sphereDist;
 			}
 
@@ -311,7 +312,22 @@
 			}			
 			
                         function density(time) {
-                            return (Math.sin(time / 2) + 1.001) / 2;
+                            //return (Math.sin(time / 2) + 1.001) / 2;
+
+                            var t = time;
+                            var initialDensity = .1;
+
+                            var l = 6;
+                            if (t < l) {
+                                return (t / l) * initialDensity;
+                            }
+                            t -= l;
+
+                            l = 15;
+                            if (t < l) return (t / l) * (1 - initialDensity) + initialDensity;
+                            t -= l;
+
+                            return 1;
                         }
 
 			function  render() {
