@@ -149,10 +149,10 @@
 					vec3 iterColor = ((1.0-iterCount*0.01) * 0.7 + vec3(n.x, n.y, n.z) * 0.3);
 					vec3 fogColor = f * fogDistFactor * fogCol;
 //					return fogCol;
-					return  iterColor * 0.5 + fogColor - vignetting;
+					return  iterColor * 0.5 + fogColor * 0.5 - vignetting;
 			  }
 			  f=maxd;
-			  return vec3(fogCol + background); //background color
+			  return vec3(background); //background color
 			}
 
 			vec4 main2(void){
@@ -378,7 +378,7 @@
 			const BPM = 125.0*2.0;
 			const BEAT_OFFSET = 0.0;
 			const BAR_DURATION = 60 / BPM;
-			const BEAT_EVERY = 8;
+			const BEAT_EVERY = 4;
 			var lastBeatTime = 0.0;
 			var nextchange=0.0;
 			var beatcount = 0;
@@ -404,7 +404,7 @@
 							beatcount = 0;
 							gl.uniform3fv(program.fogCol, [1.0, 0.8, 0.4]);
 							console.log("BEAT");
-							nextchange = time + 0.25;
+							nextchange = time + 0.15;
 							}
 						}
 					else
