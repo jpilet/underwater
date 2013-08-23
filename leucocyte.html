@@ -310,6 +310,7 @@
                         function scenario(time) {
                             var initialDensity = .1;
                             var diam = .25;
+
                             var program = [
                             { at: 0, do: function(t, l) {
                                            density = (t/l) * initialDensity;
@@ -335,19 +336,45 @@
                                            density = 1 + sin(t / 4.56) / 4;
                                            sphereSize = .2;
                                          } },
-                            { at: 170, do: function(t) {
+                            { at: 160, do: function(t) {
                                            density = (end - time) / (end - time + t);
                                            sphereSize = Math.min(2.0, 0.3 / density);
                                          } },
                             ];
 
                             runProgram(program);
+
+                            var text = "";
+                            var textElem = document.getElementById("text");
+
+                            function fadeText(t,l, txt) {
+                                textElem.alpha( Math.abs(Math.sin((t/l) * Math.PI)) );
+                            }
+                            var textProgram = [
+                            { at: 6, do: function(t, l) { text="welcome"; fadeText(t,l); } },
+                            { at: 12, do: function(t, l) { text="to";  fadeText(t,l); } },
+                            { at: 18, until: 24, do: function(t, l) { text="leucocyte"; fadeText(t,l); } },
+                            { at: 28, do: function(t, l) { text="an organic trip"; fadeText(t,l); } },
+                            { at: 36, do: function(t, l) { text="through"; fadeText(t,l); } },
+                            { at: 42, do: function(t, l) { text="demodays 2013"; fadeText(t,l); } },
+                            { at: 48, do: function(t, l) { text="by"; fadeText(t,l); } },
+                            { at: 56, do: function(t, l) { text="fred/condolo"; fadeText(t,l); } },
+                            { at: 62, until:68, do: function(t, l) { text="leto/calodox"; fadeText(t,l); } },
+                            ];
+
+                            runProgram(textProgram);
+                            if (text != textElem.innerHTML) {
+                                textElem.innerHTML = text;
+                            }
                         }
 
                         function runProgram(program) {
                             for (var i = 0; i < program.length; ++i) {
                                 var at = program[i].at;
                                 var atNext = (i < (program.length - 1) ? program[i + 1].at : end);
+                                if ("until" in program[i]) {
+                                    atNext = program[i].until;
+                                }
 
                                 if (time > at && time < atNext) {
                                     program[i].do(time - at, atNext - at);
@@ -407,14 +434,44 @@
 
 				gl.drawArrays(gl.TRIANGLES, 0, numItems);				
 			}
+
+                        HTMLElement.prototype.alpha = function(a) {
+                            current_color = getComputedStyle(this).getPropertyValue("color");
+                            match = /rgba?\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(,\s*\d+[\.\d+]*)*\)/g.exec(current_color)
+                                a = a > 1 ? (a / 100) : a;
+                            this.style.color = "rgba(" + [match[1],match[2],match[3],a].join(',') +")";
+                        }
 			</script>
+                        <link href='http://fonts.googleapis.com/css?family=Syncopate' rel='stylesheet' type='text/css'>
 	</head>
+
+        <style media="screen" type="text/css">
+        @font-face {
+            font-family: 'Syncopate';
+            font-style: normal;
+            font-weight: 400;
+            src: url('syncopate.ttf') format('truetype');
+        }
+        #mycanvas { position:absolute; top: 0; z-index:-10; }
+        #text {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 60px;
+            color: #FFCF4D;
+            position: absolute;
+            top: 540px;
+            width:780px;
+            left:10px;
+            //vertical-align: bottom;
+display:inline-block;
+        }
+</style>
 	<body onload="init()">
+                <span id="text"></span>
+		<canvas id="mycanvas" width="800" height="600">
+                </canvas>
                 <audio id="music" autoplay controls>
                 <source src="leucocyte.mp3" type="audio/mpeg">
                 </audio>
-                <br/>
-		<canvas id="mycanvas" width="800" height="600">
 
 	</body>
 </html>
