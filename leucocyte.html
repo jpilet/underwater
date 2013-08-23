@@ -449,6 +449,8 @@
 			var lastTime = 0.0;
 			
 			function  render() {
+                            resizeCanvas();
+
 				deltaTime = time - lastTime;
 				lastTime = time;
                 scenario(time);
@@ -502,6 +504,16 @@
 
 				gl.drawArrays(gl.TRIANGLES, 0, numItems);				
 			}
+                        function resizeCanvas() {
+                            if (gl.canvas.width == window.innerWidth && gl.canvas.height != window.innerHeight) {
+                                return;
+                            }
+                            gl.canvas.width = window.innerWidth;
+                            gl.canvas.height = window.innerHeight;
+			    gl.uniform3fv(program.iResolution, [canvas.width, canvas.height, 1.0]);
+                            gl.viewport(0, 0, canvas.width, canvas.height);	
+                            document.getElementById("text").style["font-size"] = (window.innerHeight / 10) + "px";
+                        }
 
                         HTMLElement.prototype.alpha = function(a) {
                             current_color = getComputedStyle(this).getPropertyValue("color");
@@ -520,22 +532,27 @@
             font-weight: 400;
             src: url('syncopate.ttf') format('truetype');
         }
-        #mycanvas { position:absolute; top: 0; z-index:-10; }
+        #mycanvas { position:absolute; top: 0; z-index:-10; width:100%; height:100%; }
         #text {
             font-family: 'Syncopate', sans-serif;
             font-size: 60px;
             color: #FFCF4D;
             position: absolute;
-            top: 540px;
-            width:780px;
-            left:10px;
-            //vertical-align: bottom;
-display:inline-block;
+            bottom: 0;
+            width: 90%;
+            left:5px;
+            vertical-align: bottom;
+display:table-cell;
+        }
+        html, body {
+          width:  100%;
+          height: 100%;
+          margin: 0px;
         }
 </style>
 	<body onload="init()">
                 <span id="text"></span>
-		<canvas id="mycanvas" width="800" height="600">
+		<canvas id="mycanvas" width=800 height=600>
                 </canvas>
                 <audio id="music" autoplay controls>
                 <source src="leucocyte.mp3" type="audio/mpeg">
