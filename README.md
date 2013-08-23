@@ -1,8 +1,13 @@
-underwater
-==========
+Leucocyte
+=========
 
-				program.prp= gl.getUniformLocation(program, "prp");
+- Tested only with Chrome
+- Big thanks to IQ (Inigo Quilez) for his documentation about raymarching and shadertoy.
 
-				// Update camera
-				gl.uniform3fv(program.prp, [12.0*Math.cos(time * 0.1), 1.0+0.9*Math.sin(time*0.05), 12.0*sin(time * 0.1)]);
-				
+Code:
+Leto / Calodox a.k.a Julien Pilet
+Soundy / NGC a.k.a Frederic Condolo
+
+Music:
+Soundy / NGC a.k.a Frederic Condolo
+No time to finish it by the deadline, sorry
