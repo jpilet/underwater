@@ -505,7 +505,7 @@
 				gl.drawArrays(gl.TRIANGLES, 0, numItems);				
 			}
                         function resizeCanvas() {
-                            if (gl.canvas.width == window.innerWidth && gl.canvas.height != window.innerHeight) {
+                            if (gl.canvas.width == window.innerWidth && gl.canvas.height == window.innerHeight) {
                                 return;
                             }
                             gl.canvas.width = window.innerWidth;
@@ -521,9 +521,9 @@
                                 a = a > 1 ? (a / 100) : a;
                             this.style.color = "rgba(" + [match[1],match[2],match[3],a].join(',') +")";
                         }
-			</script>
-                        <link href='http://fonts.googleapis.com/css?family=Syncopate' rel='stylesheet' type='text/css'>
-	</head>
+
+                            </script>
+</head>
 
         <style media="screen" type="text/css">
         @font-face {
