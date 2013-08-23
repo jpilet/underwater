@@ -320,6 +320,7 @@
 			var distortTriggerId = 0;
 			var distortTriggerEndTime = 0.0;
 			var distortTriggerSlope = 0.0;
+			const DISTORT_AMPLITUDE = 0.5;
 
 			function triggerNoise(_duration, _id) {
 				if (_id == noiseTriggerId)
@@ -341,7 +342,8 @@
 
                         function sin(x) { return Math.sin(x); }
 			
-                        var end = 184.7;
+                        var end = 150.0;
+						var AudioFadeout = 1.0;
                         function scenario(time) {
                             var initialDensity = .1;
                             var diam = .25;
@@ -370,17 +372,17 @@
                             { at: 38.5, do: function(t, l) { triggerNoise(noiseDurationSnare2, 38) } },
                             { at: 41, do: function(t, l) { triggerNoise(noiseDurationSnare2, 41) } },
                             { at: 42.5, do: function(t, l) { triggerNoise(noiseDurationSnare2, 42) } },
-                            { at: 59, do: function(t, l) { triggerDistort(1.0, 0.8, 58); } },
+                           // { at: 59, do: function(t, l) { triggerDistort(1.0, 0.8, 58); } },
                             { at: 61.5, do: function(t, l) { triggerNoise(noiseDurationSnare1, 60) } },
                             { at: 63.5, do: function(t, l) { triggerNoise(noiseDurationSnare2, 62) } },
-							{ at: 120, do: function(t, l) { triggerDistort(-1.0, 1.0, 120); } },
                             { at: 121, do: function(t, l) {
-										   triggerDistort(1.0, 1.0, 121);
+										   distort = (DISTORT_AMPLITUDE + distortSoundSynch) * (Math.sin(time * 2.4) * 0.3);
 										   noiseScale = 0.1 + Math.random() * 0.1;
                                            density = 1 + sin(t / 4.56) / 4;
-                                           //sphereSize = diam + sin(time * Math.PI * 3) / 8;
+                                           //sphereSize = diam + sin(time * Math.PI * 3) / 8;										   
                                          } },
                             { at: 140, do: function(t, l) {
+										   distort = (DISTORT_AMPLITUDE + distortSoundSynch) * (0.7 + Math.sin(time * 2.4) * 0.3);
                                            density = 1 + sin(t / 4.56) / 4;
                                            sphereSize = diam + ((l - t) / l) *sin(time * Math.PI * 4) / 8;
                                          } },
@@ -388,10 +390,11 @@
                                            density = 1 + sin(t / 4.56) / 4;
                                            sphereSize = .2;
                                          } },
-                            { at: 160, do: function(t) {
-                                           density = (end - time) / (end - time + t);
-                                           sphereSize = Math.min(2.0, 0.3 / density);
-                                         } },
+							{ at: 146, do: function(t, l) { 
+								AudioFadeout = Math.max(AudioFadeout-0.02, 0.0); music.volume=AudioFadeout;
+							   density = (end - time) / (end - time + t);
+							   sphereSize = Math.min(2.0, 0.3 / density);
+								}},
                             ];
 
                             runProgram(program);
@@ -403,15 +406,20 @@
                                 textElem.alpha( Math.abs(Math.sin((t/l) * Math.PI)) );
                             }
                             var textProgram = [
-                            { at: 6, do: function(t, l) { text="welcome"; fadeText(t,l); } },
-                            { at: 12, do: function(t, l) { text="to";  fadeText(t,l); } },
-                            { at: 18, until: 24, do: function(t, l) { text="leucocyte"; fadeText(t,l); } },
-                            { at: 28, do: function(t, l) { text="an organic trip"; fadeText(t,l); } },
-                            { at: 36, do: function(t, l) { text="through"; fadeText(t,l); } },
-                            { at: 42, do: function(t, l) { text="demodays 2013"; fadeText(t,l); } },
-                            { at: 48, do: function(t, l) { text="by"; fadeText(t,l); } },
-                            { at: 56, do: function(t, l) { text="fred/condolo"; fadeText(t,l); } },
-                            { at: 62, until:68, do: function(t, l) { text="leto/calodox"; fadeText(t,l); } },
+                            { at: 6, until: 14, do: function(t, l) { text="leucocyte"; fadeText(t,l); } },
+                            { at: 18, do: function(t, l) { text="a 2 days prod for"; fadeText(t,l); } },
+                            { at: 21, until: 28, do: function(t, l) { text="demodays 2013"; fadeText(t,l); } },
+                            { at: 60, do: function(t, l) { text="credits:"; fadeText(t,l); } },
+                            { at: 63, do: function(t, l) { text="soundy/ngc"; fadeText(t,l); } },
+                            { at: 66, until:69, do: function(t, l) { text="leto/calodox"; fadeText(t,l); } },
+                            { at: 121, do: function(t, l) { text="greets:"; fadeText(t,l); } },
+                            { at: 122, do: function(t, l) { text="iq"; fadeText(t,l); } },
+                            { at: 123, do: function(t, l) { text="frequency"; fadeText(t,l); } },
+                            { at: 124, do: function(t, l) { text="condense"; fadeText(t,l); } },
+                            { at: 125, do: function(t, l) { text="asd"; fadeText(t,l); } },
+                            { at: 126, do: function(t, l) { text="farbrausch"; fadeText(t,l); } },
+                            { at: 127, until: 128, do: function(t, l) { text="rgba"; fadeText(t,l); } },
+                            { at: 140, until: 145, do: function(t, l) { text="thank you"; fadeText(t,l); } },
                             ];
 
                             runProgram(textProgram);
@@ -447,16 +455,17 @@
 			
 			var deltaTime = 0.0;
 			var lastTime = 0.0;
+			var distort = 0.0;
 			
 			function  render() {
 				deltaTime = time - lastTime;
 				lastTime = time;
                 scenario(time);
-				const DISTORT_AMPLITUDE = 0.5;
 				const VIGNETTE_AMPLITUDE = 1.0;
 				const VIGNETTE_SCALE = VIGNETTE_AMPLITUDE/DISTORT_AMPLITUDE;
 
-				var distort = (DISTORT_AMPLITUDE + distortSoundSynch) * Math.sin(time * 0.1);
+				if (time < 121)
+					distort = (DISTORT_AMPLITUDE + distortSoundSynch) * Math.sin(time * 0.6);
 				var vignette = (DISTORT_AMPLITUDE-Math.abs(distort)) * VIGNETTE_SCALE;
 
 				gl.uniform1f(program.iGlobalTime, time);
