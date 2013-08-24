@@ -26,6 +26,7 @@
 			uniform vec3 vuv;
 			uniform float sphereDistort;
 			uniform float noiseScale;
+			uniform vec3 camShakePos;
 			
 			 const float maxe=0.001;
 			 const int maxiter=256;
@@ -155,7 +156,7 @@
 			vec4 main2(void){
 			 frag = vec2(gl_FragCoord.xy/iResolution.xy);
 			  //Camera animation
-			  vec3 prp= vec3(12.0*cos(iGlobalTime * 0.1), 1.0+0.9*sin(iGlobalTime*0.05 - frag.x), 12.0*sin(iGlobalTime * 0.1));
+			  vec3 prp= vec3(12.0*cos(iGlobalTime * 0.1) + camShakePos.x, 1.0+0.9*sin(iGlobalTime*0.05 - frag.x) + camShakePos.y, 12.0*sin(iGlobalTime * 0.1) + camShakePos.z);
 			  			  
 			  vec3 scp=camera(prp,1.5);
 			  vec3 n,p;
@@ -255,6 +256,7 @@
 				program.vuv= gl.getUniformLocation(program, "vuv");
 				program.sphereDistort = gl.getUniformLocation(program, "sphereDistort");
 				program.noiseScale = gl.getUniformLocation(program, "noiseScale");
+				program.camShakePos = gl.getUniformLocation(program, "camShakePos");
 			
 				
 				window.requestAnimFrame = (function(){
@@ -271,7 +273,7 @@
                                   var newtime = document.getElementById("music").currentTime;
                                   if (newtime != time) {
                                       time = newtime;
-                                      //console.log("Time: " + time);
+                                      console.log("Time: " + time);
                                       render();
                                   }
 				})();				
@@ -313,13 +315,28 @@
 			var noiseScale = 0.0;
 			const noiseDurationSnare1 = 0.5;
 			const noiseDurationSnare2 = 0.3;
-
+			
 			var distortSoundSynch = 0.0;
 			var distortTriggerId = 0;
 			var distortTriggerEndTime = 0.0;
 			var distortTriggerSlope = 0.0;
 			const DISTORT_AMPLITUDE = 0.5;
 
+
+			var camShakeTriggerEndTime = 0.0;
+			var camShakeTriggerSlope = 0.0;
+			var camShakeTriggerId = 0;
+			var camShakeScale = 0.0;
+
+			function triggerCamShake(_duration, _id) {
+				if (_id == camShakeTriggerId)
+				return;
+				camShakeTriggerId = _id;
+				camShakeTriggerEndTime = time + _duration;
+				camShakeScale  = 0.1;
+				camShakeTriggerSlope = camShakeScale / _duration;
+			}
+			
 			function triggerNoise(_duration, _id) {
 				if (_id == noiseTriggerId)
 				return;
@@ -355,7 +372,7 @@
                                            density = (t / l) * (1 - initialDensity) + initialDensity;
                                            sphereSize = Math.min(2.0, 0.3 / density);
                                          } },
-                            { at: 14, do: function(t, l) { triggerNoise(noiseDurationSnare1, 14) } },
+                            { at: 14, do: function(t, l) { triggerNoise(noiseDurationSnare1, 14); } },
                             { at: 15, do: function(t, l) { triggerNoise(noiseDurationSnare2, 15) } },
                             { at: 21, do: function(t, l) {
                                            density = 1 + sin(t / 4.56) / 4;
@@ -363,20 +380,25 @@
                                          } },
                             { at: 22, do: function(t, l) { triggerNoise(noiseDurationSnare1, 22); } },
                             { at: 23, do: function(t, l) { triggerNoise(noiseDurationSnare2, 23) } },
+                            { at: 29, do: function(t, l) { triggerCamShake(1.0, 29) } },
                             { at: 29.5, do: function(t, l) { triggerNoise(noiseDurationSnare1, 29) } },
                             { at: 30.5, do: function(t, l) { triggerNoise(noiseDurationSnare2, 30) } },
                             { at: 37, do: function(t, l) { triggerNoise(noiseDurationSnare1, 37); } },
                             { at: 38.5, do: function(t, l) { triggerNoise(noiseDurationSnare2, 38) } },
                             { at: 41, do: function(t, l) { triggerNoise(noiseDurationSnare2, 41) } },
                             { at: 42.5, do: function(t, l) { triggerNoise(noiseDurationSnare2, 42) } },
+                            { at: 44, do: function(t, l) { triggerCamShake(1.0, 44) } },
+                            { at: 59.5, do: function(t, l) { triggerCamShake(1.0, 60) } },
                             { at: 61.5, do: function(t, l) { triggerNoise(noiseDurationSnare1, 60) } },
                             { at: 63.5, do: function(t, l) { triggerNoise(noiseDurationSnare2, 62) } },
                             { at: 121, do: function(t, l) {
+										   triggerCamShake(1.0, 121);
 										   noiseScale = 0.1 + Math.random() * 0.1;
                                            density = 1 + sin(t / 4.56) / 4;
-                                           sphereSize = diam + sin(time * Math.PI * 3) / 8;										   
+                                           sphereSize = diam + sin(time * Math.PI * 2) / 8;										   
                                          } },
                             { at: 140, do: function(t, l) {
+										   triggerCamShake(1.0, 140);
 											distort = (DISTORT_AMPLITUDE + distortSoundSynch) * Math.sin(time * 0.8) * 0.6;
                                            density = 1 + sin(t / 4.56) / 4;
                                            //sphereSize = diam + ((l - t) / l) *sin(time * Math.PI * 4) / 8;
@@ -480,12 +502,15 @@
 				noiseScale = Math.max(noiseScale, 0.0);
 				distortSoundSynch -= deltaTime * distortTriggerSlope;
 				distortSoundSynch = Math.max(distortSoundSynch, 0.0);
+				camShakeScale -= deltaTime * camShakeTriggerSlope;
+				camShakeScale = Math.max(camShakeScale, 0.0);
 				
 				// update camera up vector
 				var angle = time * camRotSpd;
 				gl.uniform3fv(program.vuv, [-Math.sin(angle), Math.cos(angle), 0.0]);
 				
 				gl.uniform2fv(program.iMouse, virtMouseCoords);
+				gl.uniform3fv(program.camShakePos, [Math.random() * camShakeScale - camShakeScale * 0.5, Math.random() * camShakeScale - camShakeScale * 0.5, Math.random() * camShakeScale - camShakeScale * 0.5]);
 				
 				// CHANGE FOG WITH  BEAT
 				
