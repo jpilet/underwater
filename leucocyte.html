@@ -397,7 +397,7 @@
 										   triggerCamShake(1.0, 121);
 										   noiseScale = 0.1 + Math.random() * 0.1;
                                            density = 1 + sin(t / 4.56) / 4;
-                                           sphereSize = diam + sin(time * Math.PI * 2) / 8;										   
+                                           sphereSize = diam + sin(time * Math.PI * 2) / 16;
                                          } },
                             { at: 140, do: function(t, l) {
 										   triggerCamShake(1.0, 140);
@@ -430,21 +430,37 @@
                             function fadeText(t,l, txt) {
                                 textElem.alpha( Math.abs(Math.sin((t/l) * Math.PI)) );
                             }
-							var greetsOfs = 0.6;
+                            function fadeTextQuick(t,l, txt) {
+								var ramp = .2;
+								var r = t / l;
+								var alpha = 1.0;
+								if (r < ramp) {
+									alpha = t / (l * ramp);
+								} else if (r > (l - ramp)) {
+									alpha = 1 - (t - (l - ramp)) / (l * ramp);
+								}
+                                textElem.alpha(alpha);
+                            }
+
+							var greets = 120.3;
                             var textProgram = [
                             { at: 6, until: 14, do: function(t, l) { text="leucocyte"; fadeText(t,l); } },
-                            { at: 18, do: function(t, l) { text="a 2 days prod for"; fadeText(t,l); } },
+                            { at: 18, do: function(t, l) { text="a 2 day prod for"; fadeText(t,l); } },
                             { at: 21, until: 28, do: function(t, l) { text="demodays 2013"; fadeText(t,l); } },
                             { at: 60, do: function(t, l) { text="credits:"; fadeText(t,l); } },
                             { at: 63, do: function(t, l) { text="soundy/ngc"; fadeText(t,l); } },
                             { at: 66, until:69, do: function(t, l) { text="leto/calodox"; fadeText(t,l); } },
-                            { at: greetsOfs+120.7, do: function(t, l) { text="greets:"; fadeText(t,l); } },
-                            { at: greetsOfs+121.7, do: function(t, l) { text="iq"; fadeText(t,l); } },
-                            { at: greetsOfs+122.7, do: function(t, l) { text="frequency"; fadeText(t,l); } },
-                            { at: greetsOfs+123.7, do: function(t, l) { text="condense"; fadeText(t,l); } },
-                            { at: greetsOfs+124.7, do: function(t, l) { text="asd"; fadeText(t,l); } },
-                            { at: greetsOfs+125.6, do: function(t, l) { text="farbrausch"; fadeText(t,l); } },
-                            { at: greetsOfs+126.5, until: 128, do: function(t, l) { text="rgba"; fadeText(t,l); } },
+                            { at: greets + 1, do: function(t, l) { text="greets:"; fadeText(t,l); } },
+                            { at: greets + 2, do: function(t, l) { text="iq"; fadeTextQuick(t,l); } },
+                            { at: greets + 3, do: function(t, l) { text="angel"; fadeTextQuick(t,l); } },
+                            { at: greets + 4, do: function(t, l) { text="frequency"; fadeTextQuick(t,l); } },
+                            { at: greets + 5, do: function(t, l) { text="condense"; fadeTextQuick(t,l); } },
+                            { at: greets + 6, do: function(t, l) { text="asd"; fadeTextQuick(t,l); } },
+                            { at: greets + 7, do: function(t, l) { text="farbrausch"; fadeTextQuick(t,l); } },
+                            { at: greets + 8, do: function(t, l) { text="lnx"; fadeTextQuick(t,l); } },
+                            { at: greets + 9, do: function(t, l) { text="popsy team"; fadeTextQuick(t,l); } },
+                            { at: greets + 10, do: function(t, l) { text="rgba"; fadeTextQuick(t,l); } },
+                            { at: greets + 11, until: greets + 12, do: function(t, l) { text="all buenzli guys"; fadeTextQuick(t,l); } },
                             { at: 180, do: function(t, l) { text="thank you."; fadeText(t/2,l); } },
                             { at: 181, do: function(t, l) { text="thank you."; textElem.alpha(1); } },
                             ];
