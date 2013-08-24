@@ -355,13 +355,13 @@
 				distortTriggerSlope = _way * distortSoundSynch / _duration;
 			}
 
-                        function sin(x) { return Math.sin(x); }
+            function sin(x) { return Math.sin(x); }
 			
-                        var end = 150.0;
-						var AudioFadeout = 1.0;
-                        function scenario(time) {
+            function scenario(time) {
                             var initialDensity = .1;
                             var diam = .25;
+                            var volume = 1.0;
+                            var end = music.duration;
 
                             var program = [
                             { at: 0, do: function(t, l) {
@@ -407,12 +407,18 @@
                                            density = 1 + sin(t / 4.56) / 4;
                                            sphereSize = .2;
                                          } },
-							{ at: 143, do: function(t, l) { 
-								AudioFadeout = Math.max(AudioFadeout-0.02, 0.0); music.volume=AudioFadeout;
-							   density = (end - time) / (end - time + t);
-							   sphereSize = Math.min(2.0, 0.3 / density);
-								}},
+							{ at: 162, until:178, do: function(t, l) {
+                                           volume = 1 - t/l;
+                                           density = 1 - t/l;
+							               sphereSize = Math.min(2.0, 0.3 * t/l);
+                                         } },
+							{ at: 178, do: function(t, l) {
+                                           volume = 0;
+                                           density = 0.00001;
+							               sphereSize = .000001;
+                                         } },
                             ];
+                            music.volume = volume;
 
                             runProgram(program);
 
@@ -436,7 +442,8 @@
                             { at: 125, do: function(t, l) { text="asd"; fadeText(t,l); } },
                             { at: 126, do: function(t, l) { text="farbrausch"; fadeText(t,l); } },
                             { at: 127, until: 128, do: function(t, l) { text="rgba"; fadeText(t,l); } },
-                            { at: 140, until: 145, do: function(t, l) { text="thank you"; fadeText(t,l); } },
+                            { at: 180, do: function(t, l) { text="thank you."; fadeText(t/2,l); } },
+                            { at: 181, do: function(t, l) { text="thank you."; textElem.alpha(1); } },
                             ];
 
                             runProgram(textProgram);
@@ -448,7 +455,7 @@
                         function runProgram(program) {
                             for (var i = 0; i < program.length; ++i) {
                                 var at = program[i].at;
-                                var atNext = (i < (program.length - 1) ? program[i + 1].at : end);
+                                var atNext = (i < (program.length - 1) ? program[i + 1].at : music.duration + .01);
                                 if ("until" in program[i]) {
                                     atNext = program[i].until;
                                 }
@@ -475,7 +482,7 @@
 			var distort = 0.0;
 			
 			function  render() {
-                            resizeCanvas();
+                resizeCanvas();
 
 				deltaTime = time - lastTime;
 				lastTime = time;
