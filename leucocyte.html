@@ -14,8 +14,6 @@
 			precision highp float;
     		#endif
 			
-			varying vec2 vTextureCoord;
-			
 			uniform vec3 iResolution;
 			uniform float iGlobalTime;
 			uniform float vignetteVariation;
@@ -33,7 +31,8 @@
 			 const int maxiter=256;
 			const vec3 modulusSize = vec3(1.2, 1.2, 1.2);
 			const float raymarch_max_dist = 50.0;
-			
+
+			vec2 frag;
 
 			vec3 modulus(
 			  in vec3 p,
@@ -67,8 +66,7 @@
 			  
 			  
 			  float sphereDist = sdSphere(fp, sphereSize);
-//			  sphereDist += length(2.0*gl_FragCoord.xy/iResolution.xy-0.5) * sphereDistort * 1.0-(f/raymarch_max_dist);
-			  sphereDist += length(2.0*gl_FragCoord.xy/iResolution.xy-0.25) * sphereDistort * 1.0-(f/raymarch_max_dist);
+			  sphereDist += length(2.0*frag-0.25) * sphereDistort -(f/raymarch_max_dist);
 			  return sphereDist;
 			}
 
@@ -78,7 +76,6 @@
 			float raymarching(
 			  in vec3 prp,
 			  in vec3 scp,
-			  in int maxite,
 			  in float precis,
 			  in float startf,
 			  in float maxd,
@@ -91,10 +88,11 @@
 			  float f=startf;
 			  objfound=1;
 			  iterCount = 0.0;
+			  p = prp;
 			  for(int i=0;i<maxiter;i++){
-				if (abs(s)<precis||f>maxd||i>maxite) break;
+				if (abs(s)<precis||f>maxd) break;
 				f+=s;
-				p=prp+scp*f;
+				p+=s*scp;
 				s=0.95*obj(p, f);
 				iterCount += 1.0;
 			  }
@@ -106,7 +104,7 @@
 			  in vec3 prp,
 			  in float vpd)
 			{
-			  vec2 vPos=-1.0+2.0*gl_FragCoord.xy/iResolution.xy;
+			  vec2 vPos=-1.0+2.0*frag;
 			  vec3 vpn=normalize(-prp);
 			  vec3 u=normalize(cross(vuv,vpn));
 			  vec3 v=cross(vpn,u);
@@ -128,7 +126,6 @@
 			vec3 render(
 			  in vec3 prp,
 			  in vec3 scp,
-			  in int maxite,
 			  in float precis,
 			  in float startf,
 			  in float maxd,
@@ -140,12 +137,12 @@
 			{ 
 			  objfound=-1;
 			  float iterCount;
-			  f=raymarching(prp,scp,maxite,precis,startf,maxd,objfound, iterCount);
+			  f=raymarching(prp,scp,precis,startf,maxd,objfound, iterCount);
 			  if (objfound>0){
 					p=prp+scp*f;
 					n=normal(p, f);
 					float noiseColor = snoise(n.xy * 1000.0);
-					float vignetting = 0.0;//length(abs(gl_FragCoord.xy/iResolution.xy-0.5));
+					float vignetting = length(abs(frag-0.5));
 					vec3 fogColor = f/raymarch_max_dist * fogDistFactor * fogCol;
 					vec3 iterColor = (max(1.0-iterCount*0.01, 0.0) * 0.7 + vec3(n.x, n.y, n.z) * 0.3);
 //					return fogCol;
@@ -156,9 +153,9 @@
 			}
 
 			vec4 main2(void){
-			 
+			 frag = vec2(gl_FragCoord.xy/iResolution.xy);
 			  //Camera animation
-			  vec3 prp= vec3(12.0*cos(iGlobalTime * 0.1), 1.0+0.9*sin(iGlobalTime*0.05 - gl_FragCoord.x/iResolution.x), 12.0*sin(iGlobalTime * 0.1));
+			  vec3 prp= vec3(12.0*cos(iGlobalTime * 0.1), 1.0+0.9*sin(iGlobalTime*0.05 - frag.x), 12.0*sin(iGlobalTime * 0.1));
 			  			  
 			  vec3 scp=camera(prp,1.5);
 			  vec3 n,p;
@@ -168,7 +165,7 @@
 			  const vec3 backc=vec3(0.8,0.9,1.0);
 			  const vec3 ambi=vec3(0.1,0.1,0.1);
 			  
-			  vec3 c1=render(prp,scp,maxiter,maxe,startf,raymarch_max_dist,backc,n,p,f,o);
+			  vec3 c1=render(prp,scp,maxe,startf,raymarch_max_dist,backc,n,p,f,o);
 				return vec4(c1.xyz,1.0);				
 			}			
 			
@@ -468,7 +465,7 @@
 					distort = (DISTORT_AMPLITUDE + distortSoundSynch) * Math.sin(time * 0.3) * 0.8 - 0.1;
 					
 				
-				var vignette = (DISTORT_AMPLITUDE-Math.abs(distort)) * VIGNETTE_SCALE;
+				var vignette = (DISTORT_AMPLITUDE+Math.min(distort,0)) * VIGNETTE_SCALE;
 
 				gl.uniform1f(program.iGlobalTime, time);
 				gl.uniform1f(program.sphereDistort, distort);
