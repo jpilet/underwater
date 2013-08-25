@@ -190,6 +190,8 @@
 			document.onmouseup=mouseUp;
 
 			function init(){
+				if (!window.chrome)
+					alert("WARNING: Better use Chrome to run this demo!");
 				canvas = document.getElementById("mycanvas");
 				gl = canvas.getContext("experimental-webgl");
 
