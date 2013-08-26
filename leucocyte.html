@@ -191,7 +191,7 @@
 
 			function init(){
 				if (!window.chrome)
-					alert("WARNING: Better use Chrome to run this demo!");
+					alert("WARNING: For a better experience, use Chrome");
 				canvas = document.getElementById("mycanvas");
 				gl = canvas.getContext("experimental-webgl");
 
@@ -433,6 +433,7 @@
                                 textElem.alpha( Math.abs(Math.sin((t/l) * Math.PI)) );
                             }
                             function fadeTextQuick(t,l, txt) {
+							    t *= 0.5;
 								var ramp = .2;
 								var r = t / l;
 								var alpha = 1.0;
@@ -445,24 +446,25 @@
                             }
 
 							var greets = 120.3;
+							var greetsInterval = 0.952;
                             var textProgram = [
                             { at: 6, until: 14, do: function(t, l) { text="leucocyte"; fadeText(t,l); } },
-                            { at: 18, do: function(t, l) { text="a 2 day prod for"; fadeText(t,l); } },
+                            { at: 18, do: function(t, l) { text="a 2 days prod for"; fadeText(t,l); } },
                             { at: 21, until: 28, do: function(t, l) { text="demodays 2013"; fadeText(t,l); } },
                             { at: 60, do: function(t, l) { text="credits:"; fadeText(t,l); } },
                             { at: 63, do: function(t, l) { text="soundy/ngc"; fadeText(t,l); } },
                             { at: 66, until:69, do: function(t, l) { text="leto/calodox"; fadeText(t,l); } },
-                            { at: greets + 1, do: function(t, l) { text="greets:"; fadeText(t,l); } },
-                            { at: greets + 2, do: function(t, l) { text="iq"; fadeTextQuick(t,l); } },
-                            { at: greets + 3, do: function(t, l) { text="angel"; fadeTextQuick(t,l); } },
-                            { at: greets + 4, do: function(t, l) { text="frequency"; fadeTextQuick(t,l); } },
-                            { at: greets + 5, do: function(t, l) { text="condense"; fadeTextQuick(t,l); } },
-                            { at: greets + 6, do: function(t, l) { text="asd"; fadeTextQuick(t,l); } },
-                            { at: greets + 7, do: function(t, l) { text="farbrausch"; fadeTextQuick(t,l); } },
-                            { at: greets + 8, do: function(t, l) { text="lnx"; fadeTextQuick(t,l); } },
-                            { at: greets + 9, do: function(t, l) { text="popsy team"; fadeTextQuick(t,l); } },
-                            { at: greets + 10, do: function(t, l) { text="rgba"; fadeTextQuick(t,l); } },
-                            { at: greets + 11, until: greets + 12, do: function(t, l) { text="all buenzli guys"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 1, do: function(t, l) { text="greets:"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 2, do: function(t, l) { text="iq"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 3, do: function(t, l) { text="angel"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 4, do: function(t, l) { text="frequency"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 5, do: function(t, l) { text="condense"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 6, do: function(t, l) { text="asd"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 7, do: function(t, l) { text="farbrausch"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 8, do: function(t, l) { text="lnx"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 9, do: function(t, l) { text="popsy team"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 10, do: function(t, l) { text="rgba"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 11, until: greets + greetsInterval * 12, do: function(t, l) { text="all buenzli guys"; fadeTextQuick(t,l); } },
                             { at: 180, do: function(t, l) { text="thank you."; fadeText(t/2,l); } },
                             { at: 181, do: function(t, l) { text="thank you."; textElem.alpha(1); } },
                             ];
