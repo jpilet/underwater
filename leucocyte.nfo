@@ -2,6 +2,7 @@ Leucocyte
 =========
 
 A quick demo for Demodays 2013.
+Basically shows what can be done with WebGL when you have no framework to start from, and not much time to be ready for the party!
 
 - Tested only with Chrome
 - Big thanks to IQ (Inigo Quilez) for his documentation about raymarching and
