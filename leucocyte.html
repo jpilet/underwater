@@ -28,8 +28,8 @@
 			uniform float noiseScale;
 			uniform vec3 camShakePos;
 			
-			 const float maxe=0.001;
-			 const int maxiter=256;
+			const float maxe=0.001;
+			const int maxiter=256;
 			const vec3 modulusSize = vec3(1.2, 1.2, 1.2);
 			const float raymarch_max_dist = 50.0;
 
@@ -287,8 +287,8 @@
 			
 			function getMouseCoordinates(event)
 			{
-				var vx = window.event.pageX;
-				var vy = window.event.pageY;
+				var vx = event.pageX;
+				var vy = event.pageY;
 				if (isMouseDown) {
 					var dx = vx - mouseCoordsX;
 					var dy = vy - mouseCoordsY;
@@ -313,14 +313,14 @@
 			var noiseTriggerSlope = 0.0;
 			var noiseTriggerId = 0;
 			var noiseScale = 0.0;
-			const noiseDurationSnare1 = 0.5;
-			const noiseDurationSnare2 = 0.3;
+			var noiseDurationSnare1 = 0.5;
+			var noiseDurationSnare2 = 0.3;
 			
 			var distortSoundSynch = 0.0;
 			var distortTriggerId = 0;
 			var distortTriggerEndTime = 0.0;
 			var distortTriggerSlope = 0.0;
-			const DISTORT_AMPLITUDE = 0.5;
+			var DISTORT_AMPLITUDE = 0.5;
 
 
 			var camShakeTriggerEndTime = 0.0;
@@ -364,57 +364,57 @@
                             var end = music.duration;
 
                             var program = [
-                            { at: 0, do: function(t, l) {
+                            { at: 0, call: function(t, l) {
                                            density = (t/l) * initialDensity;
                                            sphereSize = Math.min(2.0, 0.3 / density);
                                          } },
-                            { at: 6, do: function(t, l) {
+                            { at: 6, call: function(t, l) {
                                            density = (t / l) * (1 - initialDensity) + initialDensity;
                                            sphereSize = Math.min(2.0, 0.3 / density);
                                          } },
-                            { at: 14, do: function(t, l) { triggerNoise(noiseDurationSnare1, 14); } },
-                            { at: 15, do: function(t, l) { triggerNoise(noiseDurationSnare2, 15) } },
-                            { at: 21, do: function(t, l) {
+                            { at: 14, call: function(t, l) { triggerNoise(noiseDurationSnare1, 14); } },
+                            { at: 15, call: function(t, l) { triggerNoise(noiseDurationSnare2, 15) } },
+                            { at: 21, call: function(t, l) {
                                            density = 1 + sin(t / 4.56) / 4;
                                            sphereSize = Math.min(2.0, 0.3 / density);
                                          } },
-                            { at: 22, do: function(t, l) { triggerNoise(noiseDurationSnare1, 22); } },
-                            { at: 23, do: function(t, l) { triggerNoise(noiseDurationSnare2, 23) } },
-                            { at: 29, do: function(t, l) { triggerCamShake(1.0, 29) } },
-                            { at: 29.5, do: function(t, l) { triggerNoise(noiseDurationSnare1, 29) } },
-                            { at: 30.5, do: function(t, l) { triggerNoise(noiseDurationSnare2, 30) } },
-                            { at: 37, do: function(t, l) { triggerNoise(noiseDurationSnare1, 37); } },
-                            { at: 38.5, do: function(t, l) { triggerNoise(noiseDurationSnare2, 38) } },
-                            { at: 41, do: function(t, l) { triggerNoise(noiseDurationSnare2, 41) } },
-                            { at: 42.5, do: function(t, l) { triggerNoise(noiseDurationSnare2, 42) } },
-                            { at: 44, do: function(t, l) { triggerCamShake(1.0, 44) } },
-                            { at: 59.5, do: function(t, l) { triggerCamShake(1.0, 60) } },
-                            { at: 61.5, do: function(t, l) { triggerNoise(noiseDurationSnare1, 60) } },
-                            { at: 63.5, do: function(t, l) { triggerNoise(noiseDurationSnare2, 62) } },
-                            { at: 89.5, do: function(t, l) { triggerNoise(noiseDurationSnare1, 89); triggerCamShake(1.0, 29); } },
-                            { at: 105.5, do: function(t, l) { triggerNoise(noiseDurationSnare1, 89); triggerCamShake(1.0, 29); } },
-                            { at: 121, do: function(t, l) {
+                            { at: 22, call: function(t, l) { triggerNoise(noiseDurationSnare1, 22); } },
+                            { at: 23, call: function(t, l) { triggerNoise(noiseDurationSnare2, 23) } },
+                            { at: 29, call: function(t, l) { triggerCamShake(1.0, 29) } },
+                            { at: 29.5, call: function(t, l) { triggerNoise(noiseDurationSnare1, 29) } },
+                            { at: 30.5, call: function(t, l) { triggerNoise(noiseDurationSnare2, 30) } },
+                            { at: 37, call: function(t, l) { triggerNoise(noiseDurationSnare1, 37); } },
+                            { at: 38.5, call: function(t, l) { triggerNoise(noiseDurationSnare2, 38) } },
+                            { at: 41, call: function(t, l) { triggerNoise(noiseDurationSnare2, 41) } },
+                            { at: 42.5, call: function(t, l) { triggerNoise(noiseDurationSnare2, 42) } },
+                            { at: 44, call: function(t, l) { triggerCamShake(1.0, 44) } },
+                            { at: 59.5, call: function(t, l) { triggerCamShake(1.0, 60) } },
+                            { at: 61.5, call: function(t, l) { triggerNoise(noiseDurationSnare1, 60) } },
+                            { at: 63.5, call: function(t, l) { triggerNoise(noiseDurationSnare2, 62) } },
+                            { at: 89.5, call: function(t, l) { triggerNoise(noiseDurationSnare1, 89); triggerCamShake(1.0, 29); } },
+                            { at: 105.5, call: function(t, l) { triggerNoise(noiseDurationSnare1, 89); triggerCamShake(1.0, 29); } },
+                            { at: 121, call: function(t, l) {
 										   triggerCamShake(1.0, 121);
 										   noiseScale = 0.1 + Math.random() * 0.1;
                                            density = 1 + sin(t / 4.56) / 4;
                                            sphereSize = diam + sin(time * Math.PI * 2) / 16;
                                          } },
-                            { at: 140, do: function(t, l) {
+                            { at: 140, call: function(t, l) {
 										   triggerCamShake(1.0, 140);
 											distort = (DISTORT_AMPLITUDE + distortSoundSynch) * Math.sin(time * 0.8) * 0.6;
                                            density = 1 + sin(t / 4.56) / 4;
                                            //sphereSize = diam + ((l - t) / l) *sin(time * Math.PI * 4) / 8;
                                          } },
-                            { at: 142, do: function(t, l) {
+                            { at: 142, call: function(t, l) {
                                            density = 1 + sin(t / 4.56) / 4;
                                            sphereSize = .2;
                                          } },
-							{ at: 162, until:178, do: function(t, l) {
+							{ at: 162, until:178, call: function(t, l) {
                                            volume = 1 - t/l;
                                            density = 1 - t/l;
 							               sphereSize = Math.min(2.0, 0.3 * t/l);
                                          } },
-							{ at: 178, do: function(t, l) {
+							{ at: 178, call: function(t, l) {
                                            volume = 0;
                                            density = 0.00001;
 							               sphereSize = .000001;
@@ -444,25 +444,25 @@
 
 							var greets = 120.3;
                             var textProgram = [
-                            { at: 6, until: 14, do: function(t, l) { text="leucocyte"; fadeText(t,l); } },
-                            { at: 18, do: function(t, l) { text="a 2 day prod for"; fadeText(t,l); } },
-                            { at: 21, until: 28, do: function(t, l) { text="demodays 2013"; fadeText(t,l); } },
-                            { at: 60, do: function(t, l) { text="credits:"; fadeText(t,l); } },
-                            { at: 63, do: function(t, l) { text="soundy/ngc"; fadeText(t,l); } },
-                            { at: 66, until:69, do: function(t, l) { text="leto/calodox"; fadeText(t,l); } },
-                            { at: greets + 1, do: function(t, l) { text="greets:"; fadeText(t,l); } },
-                            { at: greets + 2, do: function(t, l) { text="iq"; fadeTextQuick(t,l); } },
-                            { at: greets + 3, do: function(t, l) { text="angel"; fadeTextQuick(t,l); } },
-                            { at: greets + 4, do: function(t, l) { text="frequency"; fadeTextQuick(t,l); } },
-                            { at: greets + 5, do: function(t, l) { text="condense"; fadeTextQuick(t,l); } },
-                            { at: greets + 6, do: function(t, l) { text="asd"; fadeTextQuick(t,l); } },
-                            { at: greets + 7, do: function(t, l) { text="farbrausch"; fadeTextQuick(t,l); } },
-                            { at: greets + 8, do: function(t, l) { text="lnx"; fadeTextQuick(t,l); } },
-                            { at: greets + 9, do: function(t, l) { text="popsy team"; fadeTextQuick(t,l); } },
-                            { at: greets + 10, do: function(t, l) { text="rgba"; fadeTextQuick(t,l); } },
-                            { at: greets + 11, until: greets + 12, do: function(t, l) { text="all buenzli guys"; fadeTextQuick(t,l); } },
-                            { at: 180, do: function(t, l) { text="thank you."; fadeText(t/2,l); } },
-                            { at: 181, do: function(t, l) { text="thank you."; textElem.alpha(1); } },
+                            { at: 6, until: 14, call: function(t, l) { text="leucocyte"; fadeText(t,l); } },
+                            { at: 18, call: function(t, l) { text="a 2 day prod for"; fadeText(t,l); } },
+                            { at: 21, until: 28, call: function(t, l) { text="demodays 2013"; fadeText(t,l); } },
+                            { at: 60, call: function(t, l) { text="credits:"; fadeText(t,l); } },
+                            { at: 63, call: function(t, l) { text="soundy/ngc"; fadeText(t,l); } },
+                            { at: 66, until:69, call: function(t, l) { text="leto/calodox"; fadeText(t,l); } },
+                            { at: greets + 1, call: function(t, l) { text="greets:"; fadeText(t,l); } },
+                            { at: greets + 2, call: function(t, l) { text="iq"; fadeTextQuick(t,l); } },
+                            { at: greets + 3, call: function(t, l) { text="angel"; fadeTextQuick(t,l); } },
+                            { at: greets + 4, call: function(t, l) { text="frequency"; fadeTextQuick(t,l); } },
+                            { at: greets + 5, call: function(t, l) { text="condense"; fadeTextQuick(t,l); } },
+                            { at: greets + 6, call: function(t, l) { text="asd"; fadeTextQuick(t,l); } },
+                            { at: greets + 7, call: function(t, l) { text="farbrausch"; fadeTextQuick(t,l); } },
+                            { at: greets + 8, call: function(t, l) { text="lnx"; fadeTextQuick(t,l); } },
+                            { at: greets + 9, call: function(t, l) { text="popsy team"; fadeTextQuick(t,l); } },
+                            { at: greets + 10, call: function(t, l) { text="rgba"; fadeTextQuick(t,l); } },
+                            { at: greets + 11, until: greets + 12, call: function(t, l) { text="all buenzli guys"; fadeTextQuick(t,l); } },
+                            { at: 180, call: function(t, l) { text="thank you."; fadeText(t/2,l); } },
+                            { at: 181, call: function(t, l) { text="thank you."; textElem.alpha(1); } },
                             ];
 
                             runProgram(textProgram);
@@ -480,7 +480,7 @@
                                 }
 
                                 if (time > at && time < atNext) {
-                                    program[i].do(time - at, atNext - at);
+                                    program[i].call(time - at, atNext - at);
                                 }
                             }
                         }
@@ -497,8 +497,8 @@
 				deltaTime = time - lastTime;
 				lastTime = time;
                 scenario(time);
-				const VIGNETTE_AMPLITUDE = 1.0;
-				const VIGNETTE_SCALE = VIGNETTE_AMPLITUDE/DISTORT_AMPLITUDE;
+				var VIGNETTE_AMPLITUDE = 1.0;
+				var VIGNETTE_SCALE = VIGNETTE_AMPLITUDE/DISTORT_AMPLITUDE;
 
 				//if (time < 121)
 					distort = (DISTORT_AMPLITUDE + distortSoundSynch) * Math.sin(time * 0.3) * 0.8 - 0.1;
@@ -544,9 +544,9 @@
                             document.getElementById("text").style["font-size"] = (window.innerHeight / 10) + "px";
                         }
 
-                        HTMLElement.prototype.alpha = function(a) {
-                            current_color = getComputedStyle(this).getPropertyValue("color");
-                            match = /rgba?\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(,\s*\d+[\.\d+]*)*\)/g.exec(current_color)
+                        HTMLElement.prototype.alpha =  function(a) {
+                            var current_color = getComputedStyle(this).getPropertyValue("color");
+                            var match = /rgba?\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(,\s*\d+[\.\d+]*)*\)/g.exec(current_color)
                                 a = a > 1 ? (a / 100) : a;
                             this.style.color = "rgba(" + [match[1],match[2],match[3],a].join(',') +")";
                         }
@@ -584,6 +584,7 @@ display:table-cell;
 		<canvas id="mycanvas" width=800 height=600>
                 </canvas>
                 <audio id="music" autoplay controls>
+                <source src="leucocyte.ogg" type="audio/ogg">
                 <source src="leucocyte.mp3" type="audio/mpeg">
                 </audio>
 
