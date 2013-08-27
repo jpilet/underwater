@@ -190,6 +190,8 @@
 			document.onmouseup=mouseUp;
 
 			function init(){
+				//if (!window.chrome)
+				//	alert("WARNING: For a better experience, use Chrome");
 				canvas = document.getElementById("mycanvas");
 				gl = canvas.getContext("experimental-webgl");
 
@@ -427,10 +429,14 @@
                             var text = "";
                             var textElem = document.getElementById("text");
 
+                            function setTextAlpha(alpha) {
+                                textElem.style.color = "rgba(255, 207, 77, " + alpha +")";
+                            }
                             function fadeText(t,l, txt) {
-                                textElem.alpha( Math.abs(Math.sin((t/l) * Math.PI)) );
+                                setTextAlpha( Math.abs(Math.sin((t/l) * Math.PI)) );
                             }
                             function fadeTextQuick(t,l, txt) {
+							    t *= 0.5;
 								var ramp = .2;
 								var r = t / l;
 								var alpha = 1.0;
@@ -439,30 +445,31 @@
 								} else if (r > (l - ramp)) {
 									alpha = 1 - (t - (l - ramp)) / (l * ramp);
 								}
-                                textElem.alpha(alpha);
+                                setTextAlpha(alpha);
                             }
 
-							var greets = 120.3;
+							var greets = 120.6;
+							var greetsInterval = 0.948;
                             var textProgram = [
                             { at: 6, until: 14, call: function(t, l) { text="leucocyte"; fadeText(t,l); } },
-                            { at: 18, call: function(t, l) { text="a 2 day prod for"; fadeText(t,l); } },
+                            { at: 18, call: function(t, l) { text="a 2 days prod for"; fadeText(t,l); } },
                             { at: 21, until: 28, call: function(t, l) { text="demodays 2013"; fadeText(t,l); } },
                             { at: 60, call: function(t, l) { text="credits:"; fadeText(t,l); } },
                             { at: 63, call: function(t, l) { text="soundy/ngc"; fadeText(t,l); } },
                             { at: 66, until:69, call: function(t, l) { text="leto/calodox"; fadeText(t,l); } },
-                            { at: greets + 1, call: function(t, l) { text="greets:"; fadeText(t,l); } },
-                            { at: greets + 2, call: function(t, l) { text="iq"; fadeTextQuick(t,l); } },
-                            { at: greets + 3, call: function(t, l) { text="angel"; fadeTextQuick(t,l); } },
-                            { at: greets + 4, call: function(t, l) { text="frequency"; fadeTextQuick(t,l); } },
-                            { at: greets + 5, call: function(t, l) { text="condense"; fadeTextQuick(t,l); } },
-                            { at: greets + 6, call: function(t, l) { text="asd"; fadeTextQuick(t,l); } },
-                            { at: greets + 7, call: function(t, l) { text="farbrausch"; fadeTextQuick(t,l); } },
-                            { at: greets + 8, call: function(t, l) { text="lnx"; fadeTextQuick(t,l); } },
-                            { at: greets + 9, call: function(t, l) { text="popsy team"; fadeTextQuick(t,l); } },
-                            { at: greets + 10, call: function(t, l) { text="rgba"; fadeTextQuick(t,l); } },
-                            { at: greets + 11, until: greets + 12, call: function(t, l) { text="all buenzli guys"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 1, call: function(t, l) { text="greets:"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 2, call: function(t, l) { text="iq"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 3, call: function(t, l) { text="angel"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 4, call: function(t, l) { text="frequency"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 5, call: function(t, l) { text="condense"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 6, call: function(t, l) { text="asd"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 7, call: function(t, l) { text="farbrausch"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 8, call: function(t, l) { text="lnx"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 9, call: function(t, l) { text="popsy team"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 10, call: function(t, l) { text="rgba"; fadeTextQuick(t,l); } },
+                            { at: greets + greetsInterval * 11, until: greets + greetsInterval * 12, call: function(t, l) { text="all buenzli guys"; fadeTextQuick(t,l); } },
                             { at: 180, call: function(t, l) { text="thank you."; fadeText(t/2,l); } },
-                            { at: 181, call: function(t, l) { text="thank you."; textElem.alpha(1); } },
+                            { at: 181, call: function(t, l) { text="thank you."; setTextAlpha(1); } },
                             ];
 
                             runProgram(textProgram);
@@ -544,13 +551,6 @@
                             document.getElementById("text").style["font-size"] = (window.innerHeight / 10) + "px";
                         }
 
-                        HTMLElement.prototype.alpha =  function(a) {
-                            var current_color = getComputedStyle(this).getPropertyValue("color");
-                            var match = /rgba?\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(,\s*\d+[\.\d+]*)*\)/g.exec(current_color)
-                                a = a > 1 ? (a / 100) : a;
-                            this.style.color = "rgba(" + [match[1],match[2],match[3],a].join(',') +")";
-                        }
-
                             </script>
 </head>
 
@@ -583,7 +583,7 @@ display:table-cell;
                 <span id="text"></span>
 		<canvas id="mycanvas" width=800 height=600>
                 </canvas>
-                <audio id="music" autoplay controls>
+                <audio id="music" autoplay>
                 <source src="leucocyte.ogg" type="audio/ogg">
                 <source src="leucocyte.mp3" type="audio/mpeg">
                 </audio>
