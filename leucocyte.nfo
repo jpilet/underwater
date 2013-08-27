@@ -1,12 +1,13 @@
-Leucocyte
+Leucocyte  ** Final version **
 =========
 
 A quick demo for Demodays 2013.
 Basically shows what can be done with WebGL when you have no framework to start from, and not much time to be ready for the party!
 
-- Tested only with Chrome
+- Should work with chrome, firefox and safari (assuming WebGL is enabled).
 - Big thanks to IQ (Inigo Quilez) for his documentation about raymarching and
   shadertoy.
+- Big thanks to Angel for his help at the party place !
 
 
 Code:
