@@ -29,7 +29,7 @@
 			uniform vec3 camShakePos;
 			
 			 const float maxe=0.001;
-			 const int maxiter=256;
+			 const int maxiter=100;
 			const vec3 modulusSize = vec3(1.2, 1.2, 1.2);
 			const float raymarch_max_dist = 50.0;
 
@@ -94,7 +94,7 @@
 				if (abs(s)<precis||f>maxd) break;
 				f+=s;
 				p+=s*scp;
-				s=0.95*obj(p, f);
+				s=0.95*obj(p, f) + f*0.003;
 				iterCount += 1.0;
 			  }
 			  if (f>maxd) objfound=-1;
@@ -115,13 +115,11 @@
 
 			vec3 normal(in vec3 p, in float f)
 			{
-			  //tetrahedron normal
-			  const float n_er=0.01;
-			  float v1=obj(vec3(p.x+n_er,p.y-n_er,p.z-n_er), f);
-			  float v2=obj(vec3(p.x-n_er,p.y-n_er,p.z+n_er), f);
-			  float v3=obj(vec3(p.x-n_er,p.y+n_er,p.z-n_er), f);
-			  float v4=obj(vec3(p.x+n_er,p.y+n_er,p.z+n_er), f);
-			  return normalize(vec3(v4+v1-v3-v2,v3+v4-v1-v2,v2+v4-v3-v1));
+			  vec3 myMod = vec3(modulusSize.x * (1.0 + 0.2*sin(p.y + moduloSpd)), modulusSize.y * (1.0 + 0.2*cos(p.z + moduloSpd)), modulusSize.z * (1.0 + 0.2 * cos(p.x + moduloSpd)));
+			  float density = globalDensity;
+			  myMod = myMod / density;
+			  vec3 fp=modulus(p, myMod);
+			  return normalize(fp);
 			}
 
 			vec3 render(
